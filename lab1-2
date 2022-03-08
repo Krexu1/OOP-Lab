@@ -204,4 +204,23 @@ namespace lab_1
             }
         }
     }
+    class Student
+    {
+        public string Nazwisko { get; set; }
+
+        public string Imie { get; set; }
+        public decimal Średnia { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Student student &&
+                   Nazwisko == student.Nazwisko &&
+                   Imie == student.Imie &&
+                   Średnia == student.Średnia;
+        }
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
