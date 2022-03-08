@@ -6,20 +6,20 @@ namespace lab_1
     {
         static void Main(string[] args)
         {
-            /*Car car1 = new Car() { CarPower = 0 };
-            Console.WriteLine(car1.CarPower);*/
-            Money money = Money.of(100, Currency.PLN);
-            money = Money.ofWithException(100, Currency.PLN);
-            Console.WriteLine((3*money).Value);
+            /*Money money = Money.of(100, Currency.PLN);
+            Money money2 = Money.of(150, Currency.PLN);
+            Console.WriteLine((money2+money).Value);*/
+
+            Tank tank1 = new Tank(500);
         }
     }
 
+    //Waluty
     public enum Currency
     {
         PLN = 1,
         USD = 2,
         EUR = 3
-   
     }
 
     public class Money
@@ -44,13 +44,58 @@ namespace lab_1
             _value = value;
         }
 
-        public static Money operator*(Money money, decimal value)
+
+
+        //Operator mnozenia
+        public static Money operator *(Money money, decimal value)
         {
             return Money.of(money.Value * value, money._currency);
         }
+
+        //Operator mnozenia odwrotnie
         public static Money operator *(decimal value, Money money)
         {
             return Money.of(value * money.Value, money._currency);
+        }
+
+        //Operator dodwania
+        public static Money operator +(Money money, Money money2)
+        {
+            if (money._currency != money2._currency)
+            {
+                throw new ArgumentException("Różne waluty");
+            }
+            else
+            {
+                return Money.of(money.Value + money2.Value, money._currency);
+            }
+        }
+
+        // Operatory wiekszosci i mniejszosci
+
+        //WYMAGANA REFRAKTORYZACJA
+        public static bool operator >(Money money, Money money2)
+        {
+            if (money._currency != money2._currency)
+            {
+                throw new ArgumentException("Różne waluty");
+            }
+            else
+            {
+                return money.Value > money2.Value;
+            }
+        }
+
+        public static bool operator <(Money money, Money money2)
+        {
+            if (money._currency == money2._currency)
+            {
+                return money.Value > money2.Value;
+            }
+            else
+            {
+                throw new ArgumentException("Różne waluty");
+            }
         }
 
         public static Money of(decimal value, Currency currency)
@@ -75,27 +120,88 @@ namespace lab_1
                 throw new ArgumentException("Wrong value");
             }
         }
+
+        //Rzutowanie 
+        public static implicit operator decimal(Money money)
+        {
+            return money.Value;
+        }
+        public static explicit operator double(Money money)
+        {
+            return (double)money.Value;
+        }
+        public static explicit operator float(Money money)
+        {
+            return (float)money.Value;
+        }
+
+        public bool Equals(Money other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return _value == other._value && _currency.Equals(other._currency);
+        }
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Money)obj);
+        }
+
     }
 
-    
-    /*class Car
+    //Zbiornik z ciecza
+    public class Tank
     {
-      
-        private int carPower;
-        public int CarPower
+        public readonly int Capacity;
+        private int _level;
+        public Tank(int capacity)
+        {
+            Capacity = capacity;
+        }
+        public int Level
         {
             get
             {
-                return carPower;
+                return _level;
             }
-            set
+            private set
             {
-                if (value > 0)
+                if (value < 0 || value > Capacity)
                 {
-                    carPower = value;
+                    throw new ArgumentOutOfRangeException();
                 }
+                _level = value;
             }
         }
-        
-    }*/
+
+
+        public bool refuel(int amount)
+        {
+            if (amount < 0)
+            {
+                return false;
+            }
+            if (_level + amount > Capacity)
+            {
+                return false;
+            }
+            _level += amount;
+            return true;
+        }
+
+        public bool consume(int amount)
+        {
+            if (amount > 0 && _level - amount >= 0)
+            {
+                _level -= amount;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
 }
