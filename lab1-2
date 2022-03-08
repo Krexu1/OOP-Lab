@@ -1,0 +1,101 @@
+using System;
+
+namespace lab_1
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            /*Car car1 = new Car() { CarPower = 0 };
+            Console.WriteLine(car1.CarPower);*/
+            Money money = Money.of(100, Currency.PLN);
+            money = Money.ofWithException(100, Currency.PLN);
+            Console.WriteLine((3*money).Value);
+        }
+    }
+
+    public enum Currency
+    {
+        PLN = 1,
+        USD = 2,
+        EUR = 3
+   
+    }
+
+    public class Money
+    {
+        private readonly decimal _value;
+
+        public decimal Value
+        {
+            get { return _value; }
+        }
+
+        private readonly Currency _currency;
+
+        public Currency Currency
+        {
+            get { return _currency; }
+        }
+
+        private Money(decimal value, Currency currency)
+        {
+            _currency = currency;
+            _value = value;
+        }
+
+        public static Money operator*(Money money, decimal value)
+        {
+            return Money.of(money.Value * value, money._currency);
+        }
+        public static Money operator *(decimal value, Money money)
+        {
+            return Money.of(value * money.Value, money._currency);
+        }
+
+        public static Money of(decimal value, Currency currency)
+        {
+            if (value >= 0)
+            {
+                return new Money(value, currency);
+            }
+            else
+            {
+                return null;
+            }
+        }
+        public static Money ofWithException(decimal value, Currency currency)
+        {
+            if (value >= 0)
+            {
+                return new Money(value, currency);
+            }
+            else
+            {
+                throw new ArgumentException("Wrong value");
+            }
+        }
+    }
+
+    
+    /*class Car
+    {
+      
+        private int carPower;
+        public int CarPower
+        {
+            get
+            {
+                return carPower;
+            }
+            set
+            {
+                if (value > 0)
+                {
+                    carPower = value;
+                }
+            }
+        }
+        
+    }*/
+}
