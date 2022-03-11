@@ -6,15 +6,18 @@ namespace lab_1
     {
         static void Main(string[] args)
         {
-            /*Money money = Money.of(100, Currency.PLN);
+            Money money = Money.of(100, Currency.PLN);
             Money money2 = Money.of(150, Currency.PLN);
-            Console.WriteLine((money2+money).Value);*/
-
-            Tank tank1 = new Tank(500);
+            Money money3 = Money.of(100, Currency.USD);
+            Console.WriteLine((money2 + money).Value);
+            Console.WriteLine(money.Percent(23.45m));
+            Console.WriteLine(money3.CurrencyConversion(Currency.PLN, 4.1m));
         }
     }
 
-    //Waluty
+    /// <summary>
+    /// Available value types
+    /// </summary>
     public enum Currency
     {
         PLN = 1,
@@ -46,19 +49,28 @@ namespace lab_1
 
 
 
-        //Operator mnozenia
+        /// <summary>
+        /// Multiplier operator for two different money objects with same currency types
+        /// </summary>
+        /// <returns>Result of multiplication two money objects</returns>
         public static Money operator *(Money money, decimal value)
         {
             return Money.of(money.Value * value, money._currency);
         }
 
-        //Operator mnozenia odwrotnie
+        /// <summary>
+        /// Multiplier operator for two different money objects with same currency types but inverted
+        /// </summary>
+        /// <returns>Result of multiplication two money objects</returns>
         public static Money operator *(decimal value, Money money)
         {
             return Money.of(value * money.Value, money._currency);
         }
 
-        //Operator dodwania
+        /// <summary>
+        /// Additon of two different money objects with same currency types
+        /// </summary>
+        /// <returns>Sum of two money objects</returns>
         public static Money operator +(Money money, Money money2)
         {
             if (money._currency != money2._currency)
@@ -71,9 +83,10 @@ namespace lab_1
             }
         }
 
-        // Operatory wiekszosci i mniejszosci
-
-        //WYMAGANA REFRAKTORYZACJA
+        /// <summary>
+        /// Greater than operator between two different money objects with same currency type
+        /// </summary>
+        /// <returns>Greater money object</returns>
         public static bool operator >(Money money, Money money2)
         {
             if (money._currency != money2._currency)
@@ -86,15 +99,19 @@ namespace lab_1
             }
         }
 
+        /// <summary>
+        /// Lesser than operator between two different money objects with same currency type
+        /// </summary>
+        /// <returns>Lesser money object</returns>
         public static bool operator <(Money money, Money money2)
         {
-            if (money._currency == money2._currency)
+            if (money._currency != money2._currency)
             {
-                return money.Value > money2.Value;
+                throw new ArgumentException("Różne waluty");
             }
             else
             {
-                throw new ArgumentException("Różne waluty");
+                return money.Value < money2.Value;
             }
         }
 
@@ -121,7 +138,6 @@ namespace lab_1
             }
         }
 
-        //Rzutowanie 
         public static implicit operator decimal(Money money)
         {
             return money.Value;
@@ -149,9 +165,50 @@ namespace lab_1
             return Equals((Money)obj);
         }
 
+        public int CompareTo(Money? other)
+        {
+            if (ReferenceEquals(this, other)) return 0;
+            if (ReferenceEquals(null, other)) return 1;
+            var currencyComparison = _currency.CompareTo(other._currency);
+            if (currencyComparison != 0) return currencyComparison;
+            return _value.CompareTo(other._value);
+        }
     }
 
-    //Zbiornik z ciecza
+    /// <summary>
+    /// Extension methods for Money
+    /// </summary>
+    public static class MoneyExtension
+    {
+        /// <summary>
+        /// Percent of value
+        /// </summary>
+        /// <returns>Percent of certain money object</returns>
+        public static Money Percent(this Money money, decimal percent)
+        {
+            return Money.of((money.Value * percent) / 100m, money.Currency) ?? throw new
+            ArgumentException();
+        }
+
+        /// <summary>
+        /// Currency conversion
+        /// </summary>
+        /// <returns>Result of currency conversion for certain money object</returns>
+        public static Money CurrencyConversion(this Money money, Currency currency, decimal value)
+        {
+            if (money.Currency != currency)
+            {
+                return Money.of(money.Value * value, money.Currency);
+            }
+            else
+            {
+                throw new ArgumentException("Nie mozna przewalutowac na te sama walute");
+            }
+
+        }
+    }
+
+    //Tank
     public class Tank
     {
         public readonly int Capacity;
@@ -191,7 +248,7 @@ namespace lab_1
             return true;
         }
 
-        public bool consume(int amount)
+        public bool consume(Tank sourceTank, int amount)
         {
             if (amount > 0 && _level - amount >= 0)
             {
@@ -207,7 +264,6 @@ namespace lab_1
     class Student
     {
         public string Nazwisko { get; set; }
-
         public string Imie { get; set; }
         public decimal Średnia { get; set; }
 
