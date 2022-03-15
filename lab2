@@ -1,0 +1,250 @@
+using System;
+
+namespace lab2
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Vehicle horsecart1 = new HorseCart() { MaxSpeed = 20, isDriver = true, isHorse = true, Weight = 500 };
+            Vehicle[] vehicles = new Vehicle[5];
+            vehicles[0] = new HorseCart() { MaxSpeed = 20, isDriver = true, isHorse = true, Weight = 400 };
+            vehicles[1] = new Car() { MaxSpeed = 120, isFuel = true, isEngineWorking = true, Weight = 2500 };
+            vehicles[2] = new Car() { MaxSpeed = 100, isFuel = true, isEngineWorking = true, Weight = 1500 };
+            vehicles[3] = new HorseCart() { MaxSpeed = 20, isDriver = true, isHorse = true, Weight = 500 };
+            vehicles[4] = new Bicycle() { MaxSpeed = 25, isDriver = true, Weight = 50 };
+
+            int bicycleCounter = 0;
+
+            for (int i = 0; i < vehicles.Length; i++)
+            {
+                if (vehicles[i] is Bicycle)
+                {
+                    Bicycle bicycle = (Bicycle)vehicles[i];
+                    Console.WriteLine($"Czy rower ma kierowcę: {bicycle.isDriver}");
+                    bicycleCounter++;
+                }
+            }
+            Console.WriteLine($"Liczba rowerow: {bicycleCounter}");
+
+            ElectricScooter elscoot1 = new ElectricScooter() { BatteryLevel = 100, isDriver = true, MaxRange = 20, MaxSpeed = 25, Weight = 15 };
+            IFlyable flyingObject = new Duck();
+            //flyingObject = new Plain();
+            ISwimmingable swimDuck = new Duck();
+
+
+            //Przyklad wykorzystania iteracji
+            IAggregate tab = new IntAggregate();
+            IIterator iterator = tab.createIterator();
+            while(iterator.HasNext())
+            {
+                Console.WriteLine(iterator.GetNext());
+            }
+        }
+
+        public abstract class Vehicle
+        {
+            public double Weight { get; init; }
+            public int MaxSpeed { get; init; }
+            protected int _mileage;
+            public int Mealeage
+            {
+                get { return _mileage; }
+            }
+            public abstract decimal Drive(int distance);
+            public override string ToString()
+            {
+                return $"Vehicle{{ Weight: {Weight}, MaxSpeed: {MaxSpeed}, Mileage: {_mileage} }}";
+            }
+        }
+
+        public class HorseCart : Vehicle
+        {
+            public bool isDriver { get; set; }
+            public bool isHorse { get; set; }
+
+            public override decimal Drive(int distance)
+            {
+                if (isDriver && isHorse)
+                { 
+                    _mileage += distance;
+                    return (decimal)(distance / (double)MaxSpeed);
+                }
+                return -1;
+            }
+            public override string ToString()
+            {
+                return $"HorseCart{{Weight: {Weight}, MaxSpeed: {MaxSpeed}, Mileage: {_mileage}}}"; ;
+            }
+        }
+        public class Car : Vehicle
+        {
+            public bool isFuel { get; set; }
+            public bool isEngineWorking { get; set; }
+            public override decimal Drive(int distance)
+            {
+                if (isFuel && isEngineWorking)
+                {
+                    _mileage += distance;
+                    return (decimal)(distance / (double)MaxSpeed);
+                }
+                return -1;
+            }
+            public override string ToString()
+            {
+                return $"Car{{Weight: {Weight}, MaxSpeed: {MaxSpeed}, Mileage: {_mileage}}}";
+            }
+        }
+        public class Bicycle : Vehicle
+        {
+            public bool isDriver { get; set; }
+            public override decimal Drive(int distance)
+            {
+                if (isDriver)
+                {
+                    _mileage += distance;
+                    return (decimal)(distance / (double)MaxSpeed);
+                }
+                return -1;
+            }
+            public override string ToString()
+            {
+                return $"Bicycle{{Weight: {Weight}, MaxSpeed: {MaxSpeed}, Mileage: {_mileage}}}"; ;
+            }
+        }
+
+        public abstract class Scooter : Vehicle
+        {
+            public bool isDriver { get; set; }
+        }
+
+        public class ElectricScooter : Scooter, Fly
+        {
+            public int BatteryLevel { get; set; }
+            public int MaxRange { get; init; }
+
+            //public override decimal ChargeBattery(int battery)
+            //{
+
+            //}
+
+            public override decimal Drive(int distance)
+            {
+                if (isDriver && distance >= 100 * MaxRange / BatteryLevel)
+                {
+                    _mileage += distance;
+                    return (decimal)(distance / (double)MaxSpeed);
+                }
+                else
+                {
+                    return -1;
+                }
+                
+            }
+            public void Fly(int distance)
+            {
+                throw new NotImplementedException();
+            }
+        }
+        interface Fly
+        {
+            void Fly(int distance);
+        }
+
+        interface IDriveable
+        {
+            int Drive(int distance);
+        }
+        interface ISwimmingable
+        {
+            int Swim(int distance);
+        }
+        interface IFlyable
+        {
+            void TakeOff();
+            int Fly(int disntance);
+            void Land();
+        }
+
+        class Duck : ISwimmingable, IFlyable
+        {
+            public int Fly(int disntance)
+            {
+                Console.WriteLine("Duck is flying");
+                return -1;
+            }
+
+            public void Land()
+            {
+                Console.WriteLine("Duck is landing");
+                
+            }
+
+            public int Swim(int distance)
+            {
+                Console.WriteLine("Duck is swimming");
+                return -1;
+            }
+
+            public void TakeOff()
+            {
+                Console.WriteLine("Duck is taking off");
+                
+            }
+        }
+        public interface IIterator
+        {
+            bool HasNext();
+            int GetNext();
+        }
+
+        public interface IAggregate
+        {
+            IIterator createIterator();
+        }
+
+        public class IntAggregate : IAggregate
+        {
+            internal int[] array = { 2, 6, 7, 3, 6, 3, 1, 8 };
+            public IIterator createIterator()
+            {
+                return new ArrayIntIterator(this);
+            }
+        }
+        public sealed class ArrayIntIterator : IIterator
+        {
+            private int _index = 0;
+            private IntAggregate _aggregate;
+            public ArrayIntIterator(IntAggregate aggregate)
+            {
+                _aggregate = aggregate;
+            }
+            public int GetNext()
+            {
+                return _aggregate.array[_index++];
+            }
+            public bool HasNext()
+            {
+                return _index < _aggregate.array.Length;
+            }
+        }
+
+        public sealed class BackwardsArrayIntIterator : IIterator
+        {
+            private int _index = 0;
+            private IntAggregate _aggregate;
+            public BackwardsArrayIntIterator(IntAggregate aggregate)
+            {
+                _aggregate = aggregate;
+            }
+            public int GetNext()
+            {
+                return _aggregate.array[_index++];
+            }
+            public bool HasNext()
+            {
+                return _index < _aggregate.array.Length;
+            }
+        }
+    }
+}
