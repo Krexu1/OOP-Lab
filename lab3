@@ -1,0 +1,73 @@
+using System;
+
+namespace lab3_4
+{
+    class Program
+    {
+        class Pizza
+        {
+
+        }
+
+        class Margerita : Pizza
+        {
+
+        }
+
+        class PizzaBox<T> where T: Pizza
+        {
+
+        }
+        static void Main(string[] args)
+        {
+            HistoryArray<string> string1 = new HistoryArray<string>();
+            HistoryArray<int> int1 = new HistoryArray<int>();
+            HistoryArray<object> objects = new lab3_4.HistoryArray<object>();
+            string1.Add("Adam");
+            int1.Add(4);
+            objects.Add("Dawid");
+            objects.Add(4);
+            string1.Print();
+            int1.Print();
+            objects.Print();
+            Reward reward = new Reward();
+            reward.GiveTo("Director");
+            PizzaBox<Margerita> box1 = new PizzaBox<Margerita>();
+            ValueTuple<string, decimal, bool> productDesc = ValueTuple.Create("laptop", 2200m, true);
+            //(string, decimal, bool) tuple = ValueTuple.Create("xd", 1000m, false);
+
+            Console.WriteLine(productDesc);
+        }
+    }
+
+    class HistoryArray<T>
+    {
+        private T[] _array = new T[1000];
+        private int _last = -1;
+
+        public void Add(T item)
+        {
+            if(_last == 1000)
+            {
+                _last = 0;
+            }    
+            _array[++_last] = item;
+        }
+
+        public void Print()
+        {
+            for (int i = 0; i <=_last; i++)
+            {
+                Console.WriteLine(_array[i]);
+            }
+        }
+    }
+
+    class Reward
+    {
+        public void GiveTo<T>(T target)
+        {
+            Console.WriteLine("Reward goes to " + target);
+        }
+    }
+}
