@@ -1,0 +1,38 @@
+using System;
+
+namespace lab4
+{
+    class Program
+    {
+        enum Oceny
+        {
+            Niedostateczny,
+            Dostateczny,
+            DostatecznyPlus,
+            Dobry,
+            DobryPlus,
+            BardzoDobry
+        }
+
+        static void Main(string[] args)
+        {
+            string[] names = Enum.GetNames<Oceny>();
+            Console.WriteLine(string.Join(", ", names));
+            Oceny[] oceny = Enum.GetValues<Oceny>();
+            Console.WriteLine(string.Join(", ", oceny));
+            Oceny ocenaStudenta;
+
+            Console.WriteLine("Wpisz ocene studenta");
+            string nazwaOceny = Console.ReadLine();
+            try
+            {
+                ocenaStudenta = Enum.Parse<Oceny>(nazwaOceny);
+            }
+            catch(ArgumentException e)
+            {
+                Console.WriteLine("Niepoprawna ocena");
+            }
+            
+        }
+    }
+}
