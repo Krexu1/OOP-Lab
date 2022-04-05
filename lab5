@@ -6,7 +6,7 @@ namespace lab5
 {
     class Board: IEnumerable<char>
     {
-        private char[,] _board = {
+        private readonly char[,] _board = {
             {'_', 'X', '_'},
             {'O', 'X', '_'},
             {'_', '_', 'O'},
@@ -128,7 +128,7 @@ namespace lab5
     {
         static void Main(string[] args)
         {
-            Team team = new Team()
+            Team team = new()
             {
                 Leader = "Kowalski",
                 ViceLeader = "Nowak",
@@ -140,7 +140,7 @@ namespace lab5
                 Console.WriteLine(member);
             }
 
-            Board board1 = new Board();
+            Board board1 = new();
             foreach (var znak in board1)
             {
                 Console.WriteLine(znak);
