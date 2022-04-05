@@ -1,0 +1,153 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+
+namespace lab5
+{
+    class Board: IEnumerable<char>
+    {
+        private char[,] _board = {
+            {'_', 'X', '_'},
+            {'O', 'X', '_'},
+            {'_', '_', 'O'},
+            };
+
+        //przemapowanie
+        public char this[int x, int y]
+        {
+            get
+            {
+                //test poprawności x i y
+                return _board[y - 1, x - 1];
+            }
+            set
+            {
+                _board[y - 1, x - 1] = value;
+            }
+        }
+
+        public void Print()
+        {
+            for (int row = 0; row < _board.GetLength(1); row++)
+            {
+                for (int col = 0; col < _board.GetLength(0); col++)
+                {
+                    Console.Write(_board[row, col] + "" + ' ');
+                }
+                Console.WriteLine();
+            }
+        }
+
+        public IEnumerator<char> GetEnumerator()
+        {
+            for(int col = 0; col < _board.GetLength(1); col++)
+            {
+                for (int row = 0; row < _board.GetLength(0); row++)
+                {
+                    yield return _board[row, col];
+                }
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+    }
+
+    class Team : IEnumerable<string>
+    {
+        public string Leader { get; init; }
+        public string ViceLeader { get; init; }
+        public string Member1 { get; init; }
+        public string Member2 { get; init; }
+
+        public IEnumerator<string> GetEnumerator()
+        {
+            //return new TeamEnumerator(this);
+            yield return Leader;
+            yield return ViceLeader;
+            yield return Member1;
+            yield return Member2;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+    }
+
+    //class TeamEnumerator : IEnumerator<string>
+    //{
+    //    private readonly Team _team;
+    //    private int _counter = -1;
+
+    //    public TeamEnumerator(Team team)
+    //    {
+    //        _team = team;
+    //    }
+
+    //    public string Current
+    //    {
+    //        get
+    //        {
+    //            switch (_counter)
+    //            {
+    //                case 0:
+    //                    return _team.Leader;
+    //                case 1:
+    //                    return _team.ViceLeader;
+    //                case 2:
+    //                    return _team.Member1;
+    //                case 3:
+    //                    return _team.Member2;
+    //                default:
+    //                    return null;
+    //            }
+    //        }
+    //    }
+
+    //    object IEnumerator.Current => Current;
+
+    //    public void Dispose()
+    //    {
+            
+    //    }
+
+    //    public bool MoveNext()
+    //    {
+    //        return _counter++ < 4;
+    //    }
+
+    //    public void Reset()
+    //    {
+    //        _counter = 0;
+    //    }
+    //}
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Team team = new Team()
+            {
+                Leader = "Kowalski",
+                ViceLeader = "Nowak",
+                Member1 = "Stasiuk",
+                Member2 = "Jędrzejrczuk"
+            };
+            foreach(string member in team)
+            {
+                Console.WriteLine(member);
+            }
+
+            Board board1 = new Board();
+            foreach (var znak in board1)
+            {
+                Console.WriteLine(znak);
+            }
+            board1[1, 2] = 'X';
+            board1.Print();
+            
+        }
+    }
+}
